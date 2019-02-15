@@ -12,10 +12,10 @@ socket.on('connect', function() {
 
     //We call the emit inside connect
     //To be sure that we only emit if we establish connection
-    socket.emit('createMessage', {
-        from: 'andrew',
-        text: 'Yep, that works for me.'
-    });
+    // socket.emit('createMessage', {
+    //     from: 'andrew',
+    //     text: 'Yep, that works for me.'
+    // });
 });
 
 socket.on('disconnect', function() {
