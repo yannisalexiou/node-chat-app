@@ -12,11 +12,6 @@ socket.on('connect', function() {
 
     //We call the emit inside connect
     //To be sure that we only emit if we establish connection
-    socket.emit('createEmail', {
-        to: 'jen@example.com',
-        text: 'hey. This is Andrew',
-    });
-
     socket.emit('createMessage', {
         from: 'andrew',
         text: 'Yep, that works for me.'
@@ -25,10 +20,6 @@ socket.on('connect', function() {
 
 socket.on('disconnect', function() {
     console.log('Disconnected from server');
-});
-
-socket.on('newEmail', function(email) {
-    console.log('New email', email);
 });
 
 socket.on('newMessage', function (message) {
