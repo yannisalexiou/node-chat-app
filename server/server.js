@@ -45,6 +45,22 @@ io.on('connection', (socket) => {
     //     createdAt: 123123
     // });
 
+    //socket.emit from Admin text welcome to the chat app
+    socket.emit('newMessage', {
+        from: 'Admin',
+        text: 'Welcome to the chat app',
+        createdAt: new Date().getTime()
+    });
+
+    //socket.broadcast.emit <- to send it to everyone except the user who join
+    //from admin New user joined
+    socket.broadcast.emit('newMessage', {
+        from: 'Admin',
+        text: 'New user joined',
+        createdAt: new Date().getTime()
+    });
+
+
     //This is for receiving emit
     socket.on('createMessage', (message) => {
         console.log('createMessage', message);
@@ -54,6 +70,12 @@ io.on('connection', (socket) => {
             text: message.text,
             createdAt: new Date().getTime()
         });
+
+        // socket.broadcast.emit('newMessage', {
+        //     from: message.from,
+        //     text: message.text,
+        //     createdAt: new Date().getTime()
+        // });
     });
 
     socket.on('disconnect', () => {
