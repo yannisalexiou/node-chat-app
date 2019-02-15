@@ -10,24 +10,7 @@
 
 
         <script src="/socket.io/socket.io.js"></script>
-        <script>
-            //This script needs to run just after socket.io
-            //io method is available from above script
-            //This create a connection and stores the socket in a variable
-            //This var is critical for comminicating
-            //We need it in order to listen the data from the server
-            //and in order to send data back to him
-            var socket = io();
-
-            //This let us listen on an event
-            socket.on('connect', () => {
-                console.log('Connected to server');
-            });
-
-            socket.on('disconnect', () => {
-                console.log('Disconnected from server');
-            })
-        </script>
+        <script src="/js/index.js"></script>
     </body>
 </html>
 
