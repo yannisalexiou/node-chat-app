@@ -40,11 +40,6 @@ io.on('connection', (socket) => {
     //emit is very similar to the event.
     //You "listen" for an event
     //You "Create" an emit
-    // socket.emit('newMessage', {
-    //     from: 'John',
-    //     text: 'See you then',
-    //     createdAt: 123123
-    // });
 
     //socket.emit from Admin text welcome to the chat app
     socket.emit('newMessage', generateMessage(
@@ -59,12 +54,13 @@ io.on('connection', (socket) => {
 
 
     //This is for receiving emit
-    socket.on('createMessage', (message) => {
+    socket.on('createMessage', (message, callback) => {
         console.log('createMessage', message);
         //This emit an event in every single connection
         io.emit('newMessage', generateMessage(
             message.from, 
             message.text));
+        callback('This is from the server');
 
         // socket.broadcast.emit('newMessage', {
         //     from: message.from,
