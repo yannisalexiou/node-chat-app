@@ -3,7 +3,13 @@ const http = require('http');
 const express = require('express');
 const socketIO = require('socket.io');
 
-const {generateMessage, generateLocationMessage} = require('./utils/message');
+const {
+    generateMessage,
+    generateLocationMessage
+} = require('./utils/message');
+const {
+    isRealString
+} = require('./utils/validation');
 const publicPath = path.join(__dirname, '../public');
 const port = process.env.PORT || 3000;
 
@@ -35,22 +41,45 @@ app.use(express.static(publicPath));
 //This represents the individual socket to seperate from other (clients)
 io.on('connection', (socket) => {
     console.log('New user connected');
-    
+
     //The above is for sending emit
     //emit is very similar to the event.
     //You "listen" for an event
     //You "Create" an emit
 
     //socket.emit from Admin text welcome to the chat app
-    socket.emit('newMessage', generateMessage(
-        'Admin', 
-        'Welcome to the chat app'));
+    //socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat app'));
 
     //socket.broadcast.emit <- to send it to everyone except the user who join
     //from admin New user joined
-    socket.broadcast.emit('newMessage', generateMessage(
-        'Admin', 
-        'New User joined'));
+    //socket.broadcast.emit('newMessage', generateMessage('Admin', 'New User joined'));
+
+    socket.on('join', (params, callback) => {
+        if (!isRealString(params.name) || !isRealString(params.room)) {
+            callback('Name and room name are required.');
+        }
+
+        socket.join(params.room);
+        // socket.leave('The office fans');
+
+        //io.emit -> emits every single user
+        //socket.broadcast.emit -> this sends the message everyone 
+        //connected to the socket server except for the current user
+        //socket.emit -> emits an event to specifically one user
+        //For sending messages to specific room we will chain two above functions
+        //io.emit -> io.to('The office fans').emit
+        //socket.broadcast.emit -> socket.broadcast.to('The office fans').emit
+        //socket.emit -> 'as mentioned above'
+
+        //socket.emit from Admin text welcome to the chat app
+        socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat app'));
+
+        //socket.broadcast.emit <- to send it to everyone except the user who join
+        //from admin New user joined
+        socket.broadcast.to(params.room).emit('newMessage', generateMessage('Admin', `${params.name} has joined.`));
+
+        callback();
+    });
 
 
     //This is for receiving emit
@@ -58,13 +87,13 @@ io.on('connection', (socket) => {
         console.log('createMessage', message);
         //This emit an event in every single connection
         io.emit('newMessage', generateMessage(
-            message.from, 
+            message.from,
             message.text));
         callback();
     });
 
     socket.on('createLocationMessage', (coords) => {
-       io.emit('newLocationMessage', generateLocationMessage('Admin', coords.latitude, coords.longitude))     
+        io.emit('newLocationMessage', generateLocationMessage('Admin', coords.latitude, coords.longitude))
     });
 
     socket.on('disconnect', () => {

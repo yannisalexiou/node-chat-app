@@ -26,6 +26,17 @@ function scrollToBottom () {
 socket.on('connect', function() {
     console.log('Connected to server');
 
+    var params = jQuery.deparam(window.location.search);
+
+    socket.emit('join', params, function(err) {
+        if (err) {
+            alert(err);
+            window.location.href = '/';
+        } else {
+            console.log('No error');
+        }
+    });
+
     //We call the emit inside connect
     //To be sure that we only emit if we establish connection
     // socket.emit('createMessage', {
