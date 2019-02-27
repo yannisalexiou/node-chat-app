@@ -10,7 +10,9 @@ const {
 const {
     isRealString
 } = require('./utils/validation');
-const {Users} = require('./utils/users');
+const {
+    Users
+} = require('./utils/users');
 const publicPath = path.join(__dirname, '../public');
 const port = process.env.PORT || 3000;
 
@@ -91,16 +93,26 @@ io.on('connection', (socket) => {
 
     //This is for receiving emit
     socket.on('createMessage', (message, callback) => {
+        var user = users.getUser(socket.id);
+
+        if (user && isRealString(message.text)) {
+            //This emit an event in every single connection
+            io.to(user.room).emit('newMessage', generateMessage(
+                user.name,
+                message.text));
+        }
         console.log('createMessage', message);
-        //This emit an event in every single connection
-        io.emit('newMessage', generateMessage(
-            message.from,
-            message.text));
+
         callback();
     });
 
     socket.on('createLocationMessage', (coords) => {
-        io.emit('newLocationMessage', generateLocationMessage('Admin', coords.latitude, coords.longitude))
+        var user = users.getUser(socket.id);
+
+        if (user) {
+            io.to(user.room).emit('newLocationMessage', generateLocationMessage(user.name, coords.latitude, coords.longitude))
+        }
+        
     });
 
     socket.on('disconnect', () => {
